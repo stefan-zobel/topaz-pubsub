@@ -16,7 +16,7 @@ message AnyHeader {
  * Created by a publisher.
  */
 message ProducerEvent {
-    string id = 1;
+    int64 id = 1;
     bytes payload = 2;
     repeated AnyHeader headers = 3;
 }
@@ -28,7 +28,7 @@ message PublishRequest {
 
 message PublishResult {
     bool succeeded = 1;
-    string correlationId = 2;
+    int64 correlationId = 2;
 }
 
 message PublishResponse {
