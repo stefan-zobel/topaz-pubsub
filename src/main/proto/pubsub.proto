@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
 package net.topaz.grpc;
 
 option java_multiple_files = true;
@@ -64,5 +65,7 @@ service PubSub {
     rpc subscribe(SubscribeRequest) returns (stream SubscribeResponse) {}
 
     rpc unsubscribe(SubscribeRequest) returns (SubscribeResponse) {}
+
+    rpc ping(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
 

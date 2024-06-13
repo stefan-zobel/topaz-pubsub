@@ -1,6 +1,9 @@
 package net.topaz.grpc.client;
 
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
+
+import com.google.protobuf.Empty;
 
 import io.grpc.Channel;
 import io.grpc.ClientInterceptors;
@@ -28,7 +31,7 @@ public class ClientConnection implements AutoCloseable {
                 new ClientUuidInterceptor(UUID128.random128BitHex()));
         // async publishStream, async subscribe
         PubSubStub asyncStub = PubSubGrpc.newStub(interceptedChannel);
-        // blocking publish, blocking unsubscribe
+        // blocking publish, blocking subscribe, blocking unsubscribe
         PubSubBlockingStub blockStub = PubSubGrpc.newBlockingStub(interceptedChannel);
         this.channel = channel;
         this.blocking = blockStub;
@@ -37,6 +40,10 @@ public class ClientConnection implements AutoCloseable {
 
     public PublishResponse publishBlocking(PublishRequest request) {
         return blocking.publish(request);
+    }
+
+    public Iterator<SubscribeResponse> subscribeBlocking(SubscribeRequest request) {
+        return blocking.subscribe(request);
     }
 
     public SubscribeResponse unsubscribeBlocking(SubscribeRequest request) {
@@ -49,6 +56,15 @@ public class ClientConnection implements AutoCloseable {
 
     public StreamObserver<PublishRequest> publishStreamAsync(StreamObserver<PublishResponse> responseObserver) {
         return async.publishStream(responseObserver);
+    }
+
+    public boolean isConnected() {
+        try {
+            blocking.ping(Empty.getDefaultInstance());
+        } catch (Exception ignore) {
+            return false;
+        }
+        return true;
     }
 
     public void close() {
